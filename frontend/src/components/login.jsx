@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput } from 'mdb-react-ui-kit';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { signIn } from '../services/Auth';
 import '../assets/css/Login.css';
 
 function Login() {
-  const [accessToken, setAccessToken] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -23,19 +22,19 @@ function Login() {
     }
 
     try {
-      const response = await axios.post("http://localhost:8181/api/v1/auth/login", { email, password });
+      const response = await signIn({ email, password });
       const token = response.data.token;
       const user = response.data.userResponse;
 
-      setAccessToken(token);
+      sessionStorage.setItem('token', token);
       localStorage.setItem('jwtToken', token);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('username', email);  ``
+      localStorage.setItem('username', email);
       navigate('/home');
       console.log(token);
     } catch (error) {
       console.error("Error: ", error);
-      alert("Password is Incorrect");
+      alert("Login failed. Please check your credentials.");
     }
 
     setEmailError('');
