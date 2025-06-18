@@ -1,0 +1,26 @@
+
+.admin-home-container {
+    display: flex;
+  }
+  
+  .event-side-nav {
+    width: 240px; 
+    color: #fff; 
+  }
+  
+  .admin-content {
+    flex: 1; 
+    padding: 10px; 
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-profile {
+    order: -1; 
+  }
+  
+  .apex-chart {
+    flex: 1; 
+    padding-top: 10px; 
+  }
+  
