@@ -15,6 +15,5 @@ import lombok.NoArgsConstructor;
 public class BasicResponse<T> {
     private String message;
     @Builder.Default
-
     private List<T> data = Collections.emptyList();
 }

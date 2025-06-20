@@ -4,6 +4,7 @@ import static com.event.vijay.enumerated.Role.USER;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,22 +14,29 @@ import com.event.vijay.dto.request.LoginRequest;
 import com.event.vijay.dto.request.RegisterRequest;
 import com.event.vijay.dto.response.LoginResponse;
 import com.event.vijay.dto.response.RegisterResponse;
+import com.event.vijay.dto.response.UserResponse;
 import com.event.vijay.model.User;
 import com.event.vijay.repository.UserRepository;
 import com.event.vijay.service.AuthenticationService;
-import com.event.vijay.utils.jwtUtils;
-
-import lombok.RequiredArgsConstructor;
+import com.event.vijay.utils.JwtUtils;
 
 @Service
-@RequiredArgsConstructor
 @SuppressWarnings("null")
 public class AuthenticationServiceImpl implements AuthenticationService{
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final jwtUtils jwtUtil;
+    private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
+    private JwtUtils jwtUtil;
+
+    @Autowired
+    public AuthenticationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                                   AuthenticationManager authenticationManager, JwtUtils jwtUtil) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     public RegisterResponse register(RegisterRequest request){
@@ -54,9 +62,18 @@ public class AuthenticationServiceImpl implements AuthenticationService{
             .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtUtil.generateToken(user);
+        
+        // Create UserResponse
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setName(user.getName());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setRole(user.getRole());
+        
         return LoginResponse.builder()
         .message("User logged in successfully!")
         .token(token)
+        .userResponse(userResponse)
         .build();
     }
 }

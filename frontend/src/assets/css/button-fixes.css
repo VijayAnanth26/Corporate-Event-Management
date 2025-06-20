@@ -1,0 +1,62 @@
+/* Global button fixes - removes underlines from all buttons */
+
+/* Standard buttons */
+button,
+.btn,
+a.btn,
+.button,
+[type="button"],
+[type="submit"],
+[type="reset"] {
+  text-decoration: none !important;
+}
+
+/* MDB specific buttons */
+.mdb-react-ui-kit button,
+.mdb-react-ui-kit .btn,
+.mdb-react-ui-kit a.btn,
+.mdb-react-ui-kit .btn-primary,
+.mdb-react-ui-kit .btn-secondary,
+.mdb-react-ui-kit .btn-success,
+.mdb-react-ui-kit .btn-danger,
+.mdb-react-ui-kit .btn-warning,
+.mdb-react-ui-kit .btn-info,
+.mdb-react-ui-kit .btn-light,
+.mdb-react-ui-kit .btn-dark,
+.mdb-react-ui-kit .btn-link,
+.mdb-react-ui-kit .btn-floating {
+  text-decoration: none !important;
+}
+
+/* Tailwind buttons */
+.bg-blue-600,
+.bg-green-600,
+.bg-red-600,
+.bg-yellow-600,
+.bg-purple-600,
+.bg-indigo-600,
+.bg-pink-600,
+[class*="bg-"][class*="hover:"] {
+  text-decoration: none !important;
+}
+
+/* Links that look like buttons */
+a[class*="btn"],
+a[class*="button"],
+a[href]:not([class]) {
+  text-decoration: none !important;
+}
+
+/* Force override for all states */
+a:hover,
+a:focus,
+a:active,
+button:hover,
+button:focus,
+button:active,
+.btn:hover,
+.btn:focus,
+.btn:active {
+  text-decoration: none !important;
+  box-shadow: none !important;
+} 

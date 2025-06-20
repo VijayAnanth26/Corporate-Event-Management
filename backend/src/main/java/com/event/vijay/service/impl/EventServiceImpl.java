@@ -1,124 +1,104 @@
 package com.event.vijay.service.impl;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.event.vijay.dto.request.EventRequest;
 import com.event.vijay.dto.response.EventResponse;
 import com.event.vijay.model.Event;
-import com.event.vijay.repository.BookingRepository;
 import com.event.vijay.repository.EventRepository;
 import com.event.vijay.service.EventService;
 
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.stream.Collectors;
+
+// import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
-
-    private final EventRepository eventRepository;
-    private final BookingRepository bookingRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     @Override
-    public EventResponse createEvent(EventRequest request) {
-        Event event = Event.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .date(request.getDate())
-                .time(request.getTime())
-                .location(request.getLocation())
-                .capacity(request.getCapacity())
-                .price(request.getPrice())
-                .imageUrl(request.getImageUrl())
-                .eventType(request.getEventType())
-                .build();
-        
-        Event savedEvent = eventRepository.save(event);
-        return mapToEventResponse(savedEvent);
+    public List<EventResponse> getAllEvents() {
+        List<Event> events = eventRepository.findAll();
+        return events.stream()
+                .map(this::mapToEventResponse)
+                .collect(Collectors.toList());
+    }
+
+    private EventResponse mapToEventResponse(Event event) {
+        EventResponse eventResponse = new EventResponse();
+        eventResponse.setEventId(event.getEventId());
+        eventResponse.setEventType(event.getEventType());
+        eventResponse.setEventName(event.getEventName());
+        eventResponse.setDescription(event.getDescription());
+        eventResponse.setEventDescription(event.getEventDescription());
+        eventResponse.setEventDate(event.getEventDate());
+        eventResponse.setEventTime(event.getEventTime());
+        eventResponse.setEventVenue(event.getEventVenue());
+        eventResponse.setEventImageUrl(event.getEventImageUrl());
+        eventResponse.setParticipantsCount(event.getParticipantsCount());
+        eventResponse.setEventCharges(event.getEventCharges());
+        eventResponse.setEventPrice(event.getEventPrice());
+        return eventResponse;
     }
 
     @Override
-    public EventResponse updateEvent(String eventId, EventRequest request) {
+    public EventResponse getEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + eventId));
-        
-        event.setTitle(request.getTitle());
-        event.setDescription(request.getDescription());
-        event.setDate(request.getDate());
-        event.setTime(request.getTime());
-        event.setLocation(request.getLocation());
-        event.setCapacity(request.getCapacity());
-        event.setPrice(request.getPrice());
-        event.setImageUrl(request.getImageUrl());
-        event.setEventType(request.getEventType());
-        
-        Event updatedEvent = eventRepository.save(event);
-        return mapToEventResponse(updatedEvent);
-    }
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found with id: " + eventId));
 
-    @Override
-    public EventResponse getEventById(String eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + eventId));
         return mapToEventResponse(event);
     }
 
     @Override
-    public List<EventResponse> getAllEvents() {
-        return eventRepository.findAll().stream()
-                .map(this::mapToEventResponse)
-                .collect(Collectors.toList());
+    public EventResponse createEvent(EventRequest eventRequest) {
+        Event event = new Event();
+        event.setEventType(eventRequest.getEventType());
+        event.setEventName(eventRequest.getEventName());
+        event.setDescription(eventRequest.getDescription());
+        event.setEventDescription(eventRequest.getEventDescription());
+        event.setEventDate(eventRequest.getEventDate());
+        event.setEventTime(eventRequest.getEventTime());
+        event.setEventVenue(eventRequest.getEventVenue());
+        event.setEventImageUrl(eventRequest.getEventImageUrl());
+        event.setParticipantsCount(eventRequest.getParticipantsCount());
+        event.setEventCharges(eventRequest.getEventCharges());
+        event.setEventPrice(eventRequest.getEventPrice());
+
+        Event createdEvent = eventRepository.save(event);
+
+        return mapToEventResponse(createdEvent);
     }
 
     @Override
-    public List<EventResponse> getUpcomingEvents() {
-        return eventRepository.findByDateGreaterThanEqual(LocalDate.now()).stream()
-                .map(this::mapToEventResponse)
-                .collect(Collectors.toList());
+    public EventResponse updateEvent(Long eventId, EventRequest eventRequest) {
+        Event existingEvent = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found with id: " + eventId));
+
+        existingEvent.setEventType(eventRequest.getEventType());
+        existingEvent.setEventName(eventRequest.getEventName());
+        existingEvent.setDescription(eventRequest.getDescription());
+        existingEvent.setEventDescription(eventRequest.getEventDescription());
+        existingEvent.setEventDate(eventRequest.getEventDate());
+        existingEvent.setEventTime(eventRequest.getEventTime());
+        existingEvent.setEventVenue(eventRequest.getEventVenue());
+        existingEvent.setEventImageUrl(eventRequest.getEventImageUrl());
+        existingEvent.setParticipantsCount(eventRequest.getParticipantsCount());
+        existingEvent.setEventCharges(eventRequest.getEventCharges());
+        existingEvent.setEventPrice(eventRequest.getEventPrice());
+
+        Event updatedEvent = eventRepository.save(existingEvent);
+
+        return mapToEventResponse(updatedEvent);
     }
 
     @Override
-    public List<EventResponse> getEventsByType(String eventType) {
-        return eventRepository.findByEventType(eventType).stream()
-                .map(this::mapToEventResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<EventResponse> searchEvents(String query) {
-        return eventRepository.findByTitleContainingIgnoreCase(query).stream()
-                .map(this::mapToEventResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteEvent(String eventId) {
-        if (!eventRepository.existsById(eventId)) {
-            throw new EntityNotFoundException("Event not found with id: " + eventId);
-        }
+    public void deleteEvent(Long eventId) {
         eventRepository.deleteById(eventId);
     }
-    
-    private EventResponse mapToEventResponse(Event event) {
-        Integer bookedSeats = bookingRepository.countByEvent(event);
-        Integer availableSeats = event.getCapacity() - (bookedSeats != null ? bookedSeats : 0);
-        
-        return EventResponse.builder()
-                .id(event.getId())
-                .title(event.getTitle())
-                .description(event.getDescription())
-                .date(event.getDate())
-                .time(event.getTime())
-                .location(event.getLocation())
-                .capacity(event.getCapacity())
-                .price(event.getPrice())
-                .imageUrl(event.getImageUrl())
-                .eventType(event.getEventType())
-                .availableSeats(availableSeats)
-                .build();
-    }
-} 
+}

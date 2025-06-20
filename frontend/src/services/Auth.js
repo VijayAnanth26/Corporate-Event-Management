@@ -1,6 +1,4 @@
-import axios from "axios";
+import instance from "./Axios";
 
-const api_url = "http://localhost:8081";
-
-export const signIn = (data) => axios.post(`${api_url}/api/v1/auth/login`,data);
-export const signUp = (data) => axios.post(`${api_url}/api/v1/auth/register`,data);
+export const signIn = (data) => instance.post(`/api/v1/auth/login`, data);
+export const signUp = (data) => instance.post(`/api/v1/auth/register`, data);

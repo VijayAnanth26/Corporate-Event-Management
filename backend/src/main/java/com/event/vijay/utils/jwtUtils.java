@@ -16,7 +16,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Service
-public class jwtUtils {
+public class JwtUtils {
     @Value("${application.jwt.secret_key}")
     private String secret_key;
 
@@ -67,4 +67,4 @@ public class jwtUtils {
         .signWith(getSigningKey(),HS256)
         .compact();
     }
-}
+} 

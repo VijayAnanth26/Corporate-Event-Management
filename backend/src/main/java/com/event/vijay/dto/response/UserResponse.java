@@ -17,7 +17,4 @@ public class UserResponse {
     private String email;
     private String password;
     private Role role;
-    private String image;
-    private String phoneNumber;
-    private String address;
 }

@@ -4,6 +4,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,21 +13,26 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.event.vijay.utils.jwtUtils;
+import com.event.vijay.utils.JwtUtils;
 
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationConfig extends OncePerRequestFilter {
 
-  private final jwtUtils jwtUtil;
-  private final UserDetailsService userDetailsService;
+  private JwtUtils jwtUtil;
+  private UserDetailsService userDetailsService;
+  
+  @Autowired
+  public JwtAuthenticationConfig(JwtUtils jwtUtil, UserDetailsService userDetailsService) {
+    this.jwtUtil = jwtUtil;
+    this.userDetailsService = userDetailsService;
+  }
+  
   @Override
   protected void doFilterInternal(
     @NonNull HttpServletRequest request, 

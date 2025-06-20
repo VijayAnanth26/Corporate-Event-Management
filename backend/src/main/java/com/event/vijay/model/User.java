@@ -41,14 +41,14 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = true)
-    private String image;
+    // @Column(nullable = true)
+    // private String image;
 
-    @Column(nullable = true)
-    private String phoneNumber;
+    // @Column(nullable = true)
+    // private String phoneNumber;
 
-    @Column(nullable = true)
-    private String address;
+    // @Column(nullable = true)
+    // private String address;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

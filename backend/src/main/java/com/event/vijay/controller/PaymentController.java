@@ -2,57 +2,57 @@ package com.event.vijay.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.event.vijay.dto.request.PaymentRequest;
 import com.event.vijay.dto.response.PaymentResponse;
-import com.event.vijay.model.User;
 import com.event.vijay.service.PaymentService;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/payments")
-@RequiredArgsConstructor
+@RequestMapping("/api/v1/payment")
 public class PaymentController {
     
-    private final PaymentService paymentService;
-    
-    @PostMapping
-    public ResponseEntity<PaymentResponse> processPayment(@RequestBody PaymentRequest request) {
-        return new ResponseEntity<>(paymentService.processPayment(request), HttpStatus.CREATED);
+    @Autowired
+    private PaymentService paymentService;
+
+    @PostMapping("/add")
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest paymentRequest) {
+        PaymentResponse createdPayment = paymentService.createPayment(paymentRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPayment);
     }
-    
+
     @GetMapping("/{paymentId}")
-    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable String paymentId) {
-        return ResponseEntity.ok(paymentService.getPaymentById(paymentId));
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable Long paymentId) {
+        PaymentResponse payment = paymentService.getPayment(paymentId);
+        return ResponseEntity.ok(payment);
     }
-    
-    @GetMapping("/booking/{bookingId}")
-    public ResponseEntity<PaymentResponse> getPaymentByBooking(@PathVariable String bookingId) {
-        return ResponseEntity.ok(paymentService.getPaymentByBooking(bookingId));
+
+    @GetMapping("/all")
+    public ResponseEntity<List<PaymentResponse>> getAllPayments() {
+        List<PaymentResponse> payments = paymentService.getAllPayments();
+        return ResponseEntity.ok(payments);
     }
-    
-    @GetMapping("/user")
-    public ResponseEntity<List<PaymentResponse>> getMyPayments(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(paymentService.getPaymentsByUser(user.getId()));
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PaymentResponse>> getUserPayments(@PathVariable String userId) {
+        List<PaymentResponse> payments = paymentService.getPaymentsByUserId(userId);
+        return ResponseEntity.ok(payments);
     }
-    
-    @PutMapping("/{paymentId}/status")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<PaymentResponse> updatePaymentStatus(
-            @PathVariable String paymentId,
-            @RequestBody String status) {
-        return ResponseEntity.ok(paymentService.updatePaymentStatus(paymentId, status));
+
+    @PutMapping("/update/{paymentId}")
+    public ResponseEntity<PaymentResponse> updatePayment(
+            @PathVariable Long paymentId,
+            @RequestBody PaymentRequest paymentRequest) {
+        PaymentResponse updatedPayment = paymentService.updatePayment(paymentId, paymentRequest);
+        return ResponseEntity.ok(updatedPayment);
     }
-} 
+
+    @DeleteMapping("/delete/{paymentId}")
+    public ResponseEntity<Void> deletePayment(@PathVariable Long paymentId) {
+        paymentService.deletePayment(paymentId);
+        return ResponseEntity.noContent().build();
+    }
+}

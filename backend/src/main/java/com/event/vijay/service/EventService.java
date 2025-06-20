@@ -1,17 +1,22 @@
 package com.event.vijay.service;
 
-import java.util.List;
+import org.springframework.stereotype.Service;
 
 import com.event.vijay.dto.request.EventRequest;
 import com.event.vijay.dto.response.EventResponse;
 
+import java.util.List;
+
+@Service
 public interface EventService {
-    EventResponse createEvent(EventRequest request);
-    EventResponse updateEvent(String eventId, EventRequest request);
-    EventResponse getEventById(String eventId);
+
     List<EventResponse> getAllEvents();
-    List<EventResponse> getUpcomingEvents();
-    List<EventResponse> getEventsByType(String eventType);
-    List<EventResponse> searchEvents(String query);
-    void deleteEvent(String eventId);
-} 
+
+    EventResponse getEvent(Long eventId);
+
+    EventResponse createEvent(EventRequest eventRequest);
+
+    EventResponse updateEvent(Long eventId, EventRequest eventRequest);
+
+    void deleteEvent(Long eventId);
+}

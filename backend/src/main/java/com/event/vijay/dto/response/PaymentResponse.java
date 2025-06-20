@@ -1,7 +1,6 @@
 package com.event.vijay.dto.response;
 
-import java.time.LocalDateTime;
-
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,11 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentResponse {
-    private String id;
-    private BookingResponse booking;
+    private Long paymentId;
+    private String userId;
     private Double amount;
-    private LocalDateTime paymentDateTime;
-    private String paymentMethod;
-    private String status;
-    private String transactionId;
-} 
+    private Date paymentDate;
+    private String modeOfPayment;
+}
